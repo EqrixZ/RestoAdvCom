@@ -1,0 +1,13 @@
+﻿<section class="card form-card">
+    <h2>ลูกค้าใหม่</h2>
+    <form class="form" method="post" action="/customers">
+        <label>ชื่อ-นามสกุล<input type="text" name="full_name" required maxlength="100"></label>
+        <label>โทรศัพท์<input type="text" name="phone" required maxlength="20"></label>
+        <label>อีเมล<input type="email" name="email" required maxlength="120"></label>
+        <label>วันที่ลงทะเบียน<input type="date" name="register_date" required></label>
+        <div class="inline">
+            <button type="submit" class="btn btn-add">บันทึก</button>
+            <a href="/customers" class="btn btn-cancel">ยกเลิก</a>
+        </div>
+    </form>
+</section>

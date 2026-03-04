@@ -1,0 +1,97 @@
+﻿<section class="grid two-cols">
+    <article class="card">
+        <h2>สร้างการจอง (2 ชั่วโมง)</h2>
+        <form method="post" action="/reservations" class="form">
+            <label>
+                ลูกค้า
+                <select name="customer_id" required>
+                    <option value="">เลือกลูกค้า</option>
+                    <% customers.forEach((customer) => { %>
+                        <option value="<%= customer.id %>">
+                            <%= customer.full_name %> (<%= customer.phone %>)
+                        </option>
+                    <% }) %>
+                </select>
+            </label>
+            <label>
+                โต๊ะ
+                <select name="table_id" required>
+                    <option value="">เลือกโต๊ะ</option>
+                    <% tables.forEach((table) => { %>
+                        <option value="<%= table.id %>" <%= table.status === 'Maintenance' ? 'disabled' : '' %>>
+                            <%= table.table_number %> - <%= table.zone_name %> (<%= table.seat_count %> ที่นั่ง)
+                            <%= table.status === 'Maintenance' ? ' [ปิดปรับปรุง]' : '' %>
+                        </option>
+                    <% }) %>
+                </select>
+            </label>
+            <label>
+                เวลาเริ่มจอง
+                <input type="datetime-local" name="booking_time" required>
+            </label>
+            <button type="submit" class="btn btn-add">เพิ่มการจอง</button>
+        </form>
+        <p class="hint">
+            สิ้นสุด time is calculated automatically as booking time + 2 hours.
+        </p>
+    </article>
+
+    <article class="card">
+        <h2>รายการจอง</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ลูกค้า</th>
+                        <th>โต๊ะ / โซน</th>
+                        <th>เวลาเริ่มจอง</th>
+                        <th>เวลาสิ้นสุด</th>
+                        <th>สถานะ</th>
+                        <th>การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (!reservations.length) { %>
+                        <tr>
+                            <td colspan="7" class="empty">ยังไม่มีการจอง</td>
+                        </tr>
+                    <% } %>
+                    <% reservations.forEach((reservation) => { %>
+                        <tr>
+                            <td><%= reservation.id %></td>
+                            <td>
+                                <strong><%= reservation.customer_name %></strong><br>
+                                <span class="muted"><%= reservation.customer_phone %></span>
+                            </td>
+                            <td>
+                                <%= reservation.table_number %><br>
+                                <span class="muted"><%= reservation.zone_name %></span>
+                            </td>
+                            <td><%= reservation.booking_time %></td>
+                            <td><%= reservation.end_time %></td>
+                            <td>
+                                <span class="badge <%= reservation.status === 'Confirmed' ? 'info' : (reservation.status === 'Completed' ? 'ok' : 'warn') %>">
+                                    <%= reservation.status %>
+                                </span>
+                            </td>
+                            <td>
+                                <form method="post" action="/reservations/<%= reservation.id %>/status" class="inline">
+                                    <select name="status">
+                                        <option value="Confirmed" <%= reservation.status === 'Confirmed' ? 'selected' : '' %>>ยืนยันแล้ว</option>
+                                        <option value="Completed" <%= reservation.status === 'Completed' ? 'selected' : '' %>>เสร็จสิ้น</option>
+                                        <option value="Cancelled" <%= reservation.status === 'Cancelled' ? 'selected' : '' %>>ยกเลิกแล้ว</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary">อัปเดต</button>
+                                </form>
+                                <form method="post" action="/reservations/<%= reservation.id %>/delete" onsubmit="return confirm('ลบการจองนี้ใช่หรือไม่?')" class="mt-8">
+                                    <button type="submit" class="btn btn-delete">ลบ</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>

@@ -1,0 +1,25 @@
+﻿<section class="stats-grid">
+    <article class="card stat-card"><h2><%= stats.customers %></h2><p>ลูกค้าทั้งหมด</p></article>
+    <article class="card stat-card"><h2><%= stats.zones %></h2><p>โซนทั้งหมด</p></article>
+    <article class="card stat-card"><h2><%= stats.tables %></h2><p>โต๊ะทั้งหมด</p></article>
+    <article class="card stat-card"><h2><%= stats.reservations %></h2><p>การจองทั้งหมด</p></article>
+    <article class="card stat-card highlight"><h2><%= stats.activeReservations %></h2><p>ยืนยันแล้วตอนนี้</p></article>
+</section>
+
+<section class="card">
+    <h2>กิจกรรมล่าสุด</h2>
+    <ul class="activity-list">
+        <% if (!recentActivities.length) { %>
+            <li class="empty">ยังไม่มีกิจกรรมล่าสุด</li>
+        <% } %>
+        <% recentActivities.forEach((activity) => { %>
+            <li>
+                <span class="activity-type"><%= activity.activity_type === 'Reservation' ? 'การจอง' : (activity.activity_type === 'Customer' ? 'ลูกค้า' : activity.activity_type) %></span>
+                <div>
+                    <p><%= activity.activity_text %></p>
+                    <small class="muted"><%= activity.activity_time %></small>
+                </div>
+            </li>
+        <% }) %>
+    </ul>
+</section>

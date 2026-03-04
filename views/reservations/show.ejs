@@ -1,0 +1,10 @@
+﻿<section class="card detail-card">
+<h2>การจอง #<%= reservation.id %></h2>
+<p><strong>ลูกค้า:</strong> <%= reservation.customer_name %> (<%= reservation.customer_phone %>)</p>
+<p><strong>อีเมล:</strong> <%= reservation.customer_email %></p>
+<p><strong>โต๊ะ:</strong> <%= reservation.table_number %> - <%= reservation.zone_name %> (<%= reservation.seat_count %> ที่นั่ง)</p>
+<p><strong>เวลาเริ่ม:</strong> <%= reservation.booking_time %></p>
+<p><strong>เวลาสิ้นสุด:</strong> <%= reservation.end_time %></p>
+<p><strong>สถานะ:</strong> <%= reservation.status === 'Confirmed' ? 'ยืนยันแล้ว' : (reservation.status === 'Completed' ? 'เสร็จสิ้น' : (reservation.status === 'Cancelled' ? 'ยกเลิกแล้ว' : reservation.status)) %></p>
+<div class="inline"><a class="btn btn-cancel" href="/reservations/<%= reservation.id %>/edit">แก้ไข</a><form method="post" action="/reservations/<%= reservation.id %>" onsubmit="return confirm('ลบการจองนี้ใช่หรือไม่?')"><input type="hidden" name="_method" value="DELETE"><button class="btn btn-delete" type="submit">ลบ</button></form><a class="btn btn-primary" href="/reservations">กลับ</a></div>
+</section>

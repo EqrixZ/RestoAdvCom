@@ -1,0 +1,14 @@
+﻿<section class="card form-card">
+    <h2>แก้ไขลูกค้า</h2>
+    <form class="form" method="post" action="/customers/<%= customer.id %>">
+        <input type="hidden" name="_method" value="PUT">
+        <label>ชื่อ-นามสกุล<input type="text" name="full_name" required maxlength="100" value="<%= customer.full_name %>"></label>
+        <label>โทรศัพท์<input type="text" name="phone" required maxlength="20" value="<%= customer.phone %>"></label>
+        <label>อีเมล<input type="email" name="email" required maxlength="120" value="<%= customer.email %>"></label>
+        <label>วันที่ลงทะเบียน<input type="date" name="register_date" required value="<%= customer.register_date %>"></label>
+        <div class="inline">
+            <button type="submit" class="btn btn-primary">อัปเดต</button>
+            <a href="/customers/<%= customer.id %>" class="btn btn-cancel">ยกเลิก</a>
+        </div>
+    </form>
+</section>

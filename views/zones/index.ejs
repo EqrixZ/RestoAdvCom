@@ -1,0 +1,15 @@
+﻿<section class="card page-head"><h2>โซน</h2><a href="/zones/new" class="btn btn-add">เพิ่มใหม่</a></section>
+<section class="card">
+<div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>ชื่อโซน</th><th>รายละเอียด</th><th>ค่าบริการเพิ่มเติม</th><th>จำนวนโต๊ะ</th><th>การจัดการ</th></tr></thead><tbody>
+<% if (!zones.length) { %><tr><td colspan="6" class="empty">ไม่พบข้อมูลโซน</td></tr><% } %>
+<% zones.forEach((item) => { %>
+<tr>
+<td><%= item.id %></td><td><%= item.zone_name %></td><td><%= item.description || '-' %></td><td><%= Number(item.extra_charge).toFixed(2) %></td><td><%= item.table_count %></td>
+<td class="action-group">
+<a class="btn btn-primary" href="/zones/<%= item.id %>">ดู</a>
+<a class="btn btn-cancel" href="/zones/<%= item.id %>/edit">แก้ไข</a>
+<form method="post" action="/zones/<%= item.id %>" onsubmit="return confirm('ลบโซนนี้ใช่หรือไม่?')"><input type="hidden" name="_method" value="DELETE"><button class="btn btn-delete" type="submit">ลบ</button></form>
+</td>
+</tr>
+<% }) %>
+</tbody></table></div></section>

@@ -1,0 +1,85 @@
+﻿<section class="card">
+    <h2>รายงาน</h2>
+    <form method="get" action="/reports" class="inline-filter">
+        <label>
+            Select วันที่
+            <input type="date" name="date" value="<%= date %>">
+        </label>
+        <div class="inline">
+            <button type="submit" class="btn btn-primary">โหลดรายงาน</button>
+            <button type="button" class="btn btn-cancel" onclick="window.print()">พิมพ์</button>
+        </div>
+    </form>
+</section>
+
+<section class="grid two-cols">
+    <article class="card">
+        <h3>1) Daily โต๊ะ Usage</h3>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>โต๊ะ</th>
+                        <th>Zone</th>
+                        <th>ลูกค้า</th>
+                        <th>เริ่ม</th>
+                        <th>สิ้นสุด</th>
+                        <th>สถานะ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (!dailyUsage.length) { %>
+                        <tr>
+                            <td colspan="6" class="empty">ไม่มีการจองในวันที่เลือก</td>
+                        </tr>
+                    <% } %>
+                    <% dailyUsage.forEach((item) => { %>
+                        <tr>
+                            <td><%= item.table_number %></td>
+                            <td><%= item.zone_name %></td>
+                            <td><%= item.customer_name %></td>
+                            <td><%= item.booking_time %></td>
+                            <td><%= item.end_time %></td>
+                            <td><%= item.status %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="card">
+        <h3>2) สรุปผู้ใช้บริการตามโซน</h3>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Zone</th>
+                        <th>จำนวนการจอง</th>
+                        <th>ผู้ใช้บริการโดยประมาณ</th>
+                        <th>ยืนยันแล้ว</th>
+                        <th>เสร็จสิ้น</th>
+                        <th>ยกเลิกแล้ว</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (!zoneSummary.length) { %>
+                        <tr>
+                            <td colspan="6" class="empty">ไม่พบข้อมูลโซน</td>
+                        </tr>
+                    <% } %>
+                    <% zoneSummary.forEach((zone) => { %>
+                        <tr>
+                            <td><%= zone.zone_name %></td>
+                            <td><%= zone.reservation_count %></td>
+                            <td><%= zone.estimated_visitors %></td>
+                            <td><%= zone.confirmed_count %></td>
+                            <td><%= zone.completed_count %></td>
+                            <td><%= zone.cancelled_count %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>

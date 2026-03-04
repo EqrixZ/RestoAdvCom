@@ -1,0 +1,82 @@
+﻿<section class="grid two-cols">
+    <article class="card">
+        <h2>เพิ่มโต๊ะอาหาร</h2>
+        <form method="post" action="/tables" class="form">
+            <label>
+                หมายเลขโต๊ะ
+                <input type="text" name="table_number" placeholder="T1, G2" required>
+            </label>
+            <label>
+                จำนวนที่นั่ง
+                <input type="number" name="seat_count" min="1" required>
+            </label>
+            <label>
+                Zone
+                <select name="zone_id" required>
+                    <option value="">เลือกโซน</option>
+                    <% zones.forEach((zone) => { %>
+                        <option value="<%= zone.id %>"><%= zone.zone_name %></option>
+                    <% }) %>
+                </select>
+            </label>
+            <label>
+                สถานะ
+                <select name="status">
+                    <option value="Available">ว่าง</option>
+                    <option value="Maintenance">ปิดปรับปรุง</option>
+                </select>
+            </label>
+            <button type="submit" class="btn btn-add">Add โต๊ะ</button>
+        </form>
+    </article>
+
+    <article class="card">
+        <h2>โต๊ะอาหาร</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>โต๊ะ</th>
+                        <th>ที่นั่ง</th>
+                        <th>Zone</th>
+                        <th>สถานะ</th>
+                        <th>การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (!tables.length) { %>
+                        <tr>
+                            <td colspan="6" class="empty">ยังไม่มีโต๊ะ</td>
+                        </tr>
+                    <% } %>
+                    <% tables.forEach((table) => { %>
+                        <tr>
+                            <td><%= table.id %></td>
+                            <td><%= table.table_number %></td>
+                            <td><%= table.seat_count %></td>
+                            <td><%= table.zone_name %></td>
+                            <td>
+                                <span class="badge <%= table.status === 'Available' ? 'ok' : 'warn' %>">
+                                    <%= table.status %>
+                                </span>
+                            </td>
+                            <td>
+                                <form method="post" action="/tables/<%= table.id %>/status" class="inline">
+                                    <select name="status">
+                                        <option value="Available" <%= table.status === 'Available' ? 'selected' : '' %>>Available</option>
+                                        <option value="Maintenance" <%= table.status === 'Maintenance' ? 'selected' : '' %>>Maintenance</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary">อัปเดต</button>
+                                </form>
+                                <form method="post" action="/tables/<%= table.id %>/delete" onsubmit="return confirm('ลบโต๊ะนี้ใช่หรือไม่?')" class="mt-8">
+                                    <button type="submit" class="btn btn-delete">ลบ</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>

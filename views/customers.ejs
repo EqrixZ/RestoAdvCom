@@ -1,0 +1,63 @@
+﻿<section class="grid two-cols">
+    <article class="card">
+        <h2>เพิ่มลูกค้า</h2>
+        <form method="post" action="/customers" class="form">
+            <label>
+                ชื่อ-นามสกุล
+                <input type="text" name="full_name" required>
+            </label>
+            <label>
+                โทรศัพท์
+                <input type="text" name="phone" required>
+            </label>
+            <label>
+                อีเมล
+                <input type="email" name="email" required>
+            </label>
+            <label>
+                วันที่ลงทะเบียน
+                <input type="date" name="register_date">
+            </label>
+            <button type="submit" class="btn btn-add">เพิ่มลูกค้า</button>
+        </form>
+    </article>
+
+    <article class="card">
+        <h2>ลูกค้า</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ชื่อ</th>
+                        <th>โทรศัพท์</th>
+                        <th>อีเมล</th>
+                        <th>วันที่ลงทะเบียน</th>
+                        <th>การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (!customers.length) { %>
+                        <tr>
+                            <td colspan="6" class="empty">ยังไม่มีลูกค้า</td>
+                        </tr>
+                    <% } %>
+                    <% customers.forEach((customer) => { %>
+                        <tr>
+                            <td><%= customer.id %></td>
+                            <td><%= customer.full_name %></td>
+                            <td><%= customer.phone %></td>
+                            <td><%= customer.email %></td>
+                            <td><%= customer.register_date %></td>
+                            <td>
+                                <form method="post" action="/customers/<%= customer.id %>/delete" onsubmit="return confirm('ลบลูกค้าคนนี้ใช่หรือไม่?')">
+                                    <button type="submit" class="btn btn-delete">ลบ</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>

@@ -1,0 +1,7 @@
+﻿<section class="card form-card"><h2>โต๊ะใหม่</h2><form class="form" method="post" action="/tables">
+<label>หมายเลขโต๊ะ<input type="text" name="table_number" required maxlength="20"></label>
+<label>จำนวนที่นั่ง<input type="number" name="seat_count" required min="1"></label>
+<label>โซน<select name="zone_id" required><option value="">เลือกโซน</option><% zones.forEach((z) => { %><option value="<%= z.id %>"><%= z.zone_name %></option><% }) %></select></label>
+<label>สถานะ<select name="status" required><option value="Available">ว่าง</option><option value="Maintenance">ปิดปรับปรุง</option></select></label>
+<div class="inline"><button class="btn btn-add" type="submit">บันทึก</button><a class="btn btn-cancel" href="/tables">ยกเลิก</a></div>
+</form></section>

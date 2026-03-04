@@ -1,0 +1,8 @@
+﻿<section class="card detail-card">
+<h2>โซน #<%= zone.id %></h2>
+<p><strong>ชื่อ:</strong> <%= zone.zone_name %></p>
+<p><strong>รายละเอียด:</strong> <%= zone.description || '-' %></p>
+<p><strong>ค่าบริการเพิ่มเติม:</strong> <%= Number(zone.extra_charge).toFixed(2) %></p>
+<div class="inline"><a class="btn btn-cancel" href="/zones/<%= zone.id %>/edit">แก้ไข</a><form method="post" action="/zones/<%= zone.id %>" onsubmit="return confirm('ลบโซนนี้ใช่หรือไม่?')"><input type="hidden" name="_method" value="DELETE"><button class="btn btn-delete" type="submit">ลบ</button></form><a class="btn btn-primary" href="/zones">กลับ</a></div>
+</section>
+<section class="card"><h3>โต๊ะในโซนนี้</h3><div class="table-wrap"><table class="data-table"><thead><tr><th>โต๊ะ</th><th>ที่นั่ง</th><th>สถานะ</th></tr></thead><tbody><% if (!tables.length) { %><tr><td colspan="3" class="empty">ไม่พบข้อมูลโต๊ะ</td></tr><% } %><% tables.forEach((t) => { %><tr><td><%= t.table_number %></td><td><%= t.seat_count %></td><td><%= t.status === 'Available' ? 'ว่าง' : (t.status === 'Maintenance' ? 'ปิดปรับปรุง' : t.status) %></td></tr><% }) %></tbody></table></div></section>

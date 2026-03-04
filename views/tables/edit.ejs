@@ -1,0 +1,8 @@
+﻿<section class="card form-card"><h2>แก้ไขโต๊ะ</h2><form class="form" method="post" action="/tables/<%= table.id %>">
+<input type="hidden" name="_method" value="PUT">
+<label>หมายเลขโต๊ะ<input type="text" name="table_number" required maxlength="20" value="<%= table.table_number %>"></label>
+<label>จำนวนที่นั่ง<input type="number" name="seat_count" required min="1" value="<%= table.seat_count %>"></label>
+<label>โซน<select name="zone_id" required><% zones.forEach((z) => { %><option value="<%= z.id %>" <%= Number(table.zone_id) === Number(z.id) ? 'selected' : '' %>><%= z.zone_name %></option><% }) %></select></label>
+<label>สถานะ<select name="status" required><option value="Available" <%= table.status === 'Available' ? 'selected' : '' %>>ว่าง</option><option value="Maintenance" <%= table.status === 'Maintenance' ? 'selected' : '' %>>ปิดปรับปรุง</option></select></label>
+<div class="inline"><button class="btn btn-primary" type="submit">อัปเดต</button><a class="btn btn-cancel" href="/tables/<%= table.id %>">ยกเลิก</a></div>
+</form></section>

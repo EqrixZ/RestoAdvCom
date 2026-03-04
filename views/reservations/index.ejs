@@ -1,0 +1,7 @@
+﻿<section class="card page-head"><h2>การจอง</h2><a href="/reservations/new" class="btn btn-add">เพิ่มใหม่</a></section>
+<section class="card"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>ลูกค้า</th><th>โต๊ะ</th><th>โซน</th><th>เริ่ม</th><th>สิ้นสุด</th><th>สถานะ</th><th>การจัดการ</th></tr></thead><tbody>
+<% if (!reservations.length) { %><tr><td colspan="8" class="empty">ไม่พบข้อมูลการจอง</td></tr><% } %>
+<% reservations.forEach((item) => { %>
+<tr><td><%= item.id %></td><td><%= item.customer_name %></td><td><%= item.table_number %></td><td><%= item.zone_name %></td><td><%= item.booking_time %></td><td><%= item.end_time %></td><td><%= item.status === 'Confirmed' ? 'ยืนยันแล้ว' : (item.status === 'Completed' ? 'เสร็จสิ้น' : (item.status === 'Cancelled' ? 'ยกเลิกแล้ว' : item.status)) %></td><td class="action-group"><a class="btn btn-primary" href="/reservations/<%= item.id %>">ดู</a><a class="btn btn-cancel" href="/reservations/<%= item.id %>/edit">แก้ไข</a><form method="post" action="/reservations/<%= item.id %>" onsubmit="return confirm('ลบการจองนี้ใช่หรือไม่?')"><input type="hidden" name="_method" value="DELETE"><button class="btn btn-delete" type="submit">ลบ</button></form></td></tr>
+<% }) %>
+</tbody></table></div></section>

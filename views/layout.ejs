@@ -1,0 +1,12 @@
+﻿<%- include("partials/header", { title: typeof title !== "undefined" ? title : "RestoBook", activePage: typeof activePage !== "undefined" ? activePage : "" }) %>
+
+<main class="container">
+    <% if (typeof flashMessage !== "undefined" && flashMessage) { %>
+        <div class="flash flash-<%= typeof flashType !== "undefined" && flashType === "error" ? "error" : "success" %>">
+            <%= flashMessage %>
+        </div>
+    <% } %>
+    <%- include(content) %>
+</main>
+
+<%- include("partials/footer") %>

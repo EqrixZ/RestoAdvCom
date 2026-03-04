@@ -1,0 +1,10 @@
+﻿<section class="card form-card">
+<h2>แก้ไขโซน</h2>
+<form class="form" method="post" action="/zones/<%= zone.id %>">
+<input type="hidden" name="_method" value="PUT">
+<label>ชื่อโซน<input type="text" name="zone_name" required maxlength="100" value="<%= zone.zone_name %>"></label>
+<label>รายละเอียด<textarea name="description" maxlength="250"><%= zone.description || '' %></textarea></label>
+<label>ค่าบริการเพิ่มเติม<input type="number" name="extra_charge" min="0" step="0.01" value="<%= zone.extra_charge %>"></label>
+<div class="inline"><button type="submit" class="btn btn-primary">อัปเดต</button><a href="/zones/<%= zone.id %>" class="btn btn-cancel">ยกเลิก</a></div>
+</form>
+</section>

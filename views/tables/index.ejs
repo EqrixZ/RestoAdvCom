@@ -1,0 +1,7 @@
+﻿<section class="card page-head"><h2>โต๊ะอาหาร</h2><a href="/tables/new" class="btn btn-add">เพิ่มใหม่</a></section>
+<section class="card"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>โต๊ะ</th><th>ที่นั่ง</th><th>โซน</th><th>สถานะ</th><th>การจัดการ</th></tr></thead><tbody>
+<% if (!tables.length) { %><tr><td colspan="6" class="empty">ไม่พบข้อมูลโต๊ะ</td></tr><% } %>
+<% tables.forEach((item) => { %>
+<tr><td><%= item.id %></td><td><%= item.table_number %></td><td><%= item.seat_count %></td><td><%= item.zone_name %></td><td><%= item.status === 'Available' ? 'ว่าง' : (item.status === 'Maintenance' ? 'ปิดปรับปรุง' : item.status) %></td><td class="action-group"><a class="btn btn-primary" href="/tables/<%= item.id %>">ดู</a><a class="btn btn-cancel" href="/tables/<%= item.id %>/edit">แก้ไข</a><form method="post" action="/tables/<%= item.id %>" onsubmit="return confirm('ลบโต๊ะนี้ใช่หรือไม่?')"><input type="hidden" name="_method" value="DELETE"><button class="btn btn-delete" type="submit">ลบ</button></form></td></tr>
+<% }) %>
+</tbody></table></div></section>

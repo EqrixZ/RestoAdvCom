@@ -1,0 +1,10 @@
+﻿<section class="card page-head"><h2>รายงาน: การใช้งานโต๊ะรายวัน</h2><div class="inline"><a class="btn btn-cancel" href="/reports/zone-visitors">ผู้ใช้บริการตามโซน</a><button type="button" class="btn btn-cancel" onclick="window.print()">พิมพ์</button></div></section>
+<section class="card">
+<form class="inline-filter" method="get" action="/reports/daily-table-usage">
+<label>วันที่<input type="date" name="date" value="<%= date %>"></label>
+<label>สถานะ<select name="status"><option value="All" <%= status === 'All' ? 'selected' : '' %>>ทั้งหมด</option><option value="Confirmed" <%= status === 'Confirmed' ? 'selected' : '' %>>ยืนยันแล้ว</option><option value="Completed" <%= status === 'Completed' ? 'selected' : '' %>>เสร็จสิ้น</option><option value="Cancelled" <%= status === 'Cancelled' ? 'selected' : '' %>>ยกเลิกแล้ว</option></select></label>
+<button class="btn btn-primary" type="submit">กรอง</button>
+</form>
+<div class="summary-grid"><div class="summary-item">รวม: <strong><%= summary.total %></strong></div><div class="summary-item">ยืนยันแล้ว: <strong><%= summary.confirmed %></strong></div><div class="summary-item">เสร็จสิ้น: <strong><%= summary.completed %></strong></div><div class="summary-item">ยกเลิกแล้ว: <strong><%= summary.cancelled %></strong></div></div>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>โต๊ะ</th><th>โซน</th><th>ลูกค้า</th><th>เริ่ม</th><th>สิ้นสุด</th><th>สถานะ</th></tr></thead><tbody><% if (!rows.length) { %><tr><td colspan="7" class="empty">ไม่พบข้อมูล</td></tr><% } %><% rows.forEach((r) => { %><tr><td><%= r.id %></td><td><%= r.table_number %></td><td><%= r.zone_name %></td><td><%= r.customer_name %></td><td><%= r.booking_time %></td><td><%= r.end_time %></td><td><%= r.status === 'Confirmed' ? 'ยืนยันแล้ว' : (r.status === 'Completed' ? 'เสร็จสิ้น' : (r.status === 'Cancelled' ? 'ยกเลิกแล้ว' : r.status)) %></td></tr><% }) %></tbody></table></div>
+</section>

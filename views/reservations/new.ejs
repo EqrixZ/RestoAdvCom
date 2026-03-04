@@ -1,0 +1,8 @@
+﻿<section class="card form-card"><h2>การจองใหม่</h2><form class="form" method="post" action="/reservations">
+<label>ลูกค้า<select name="customer_id" required><option value="">เลือกลูกค้า</option><% customers.forEach((c) => { %><option value="<%= c.id %>"><%= c.full_name %> (<%= c.phone %>)</option><% }) %></select></label>
+<label>โต๊ะ<select name="table_id" required><option value="">เลือกโต๊ะ</option><% tables.forEach((t) => { %><option value="<%= t.id %>" <%= t.status === 'Maintenance' ? 'disabled' : '' %>><%= t.table_number %> - <%= t.zone_name %> (<%= t.seat_count %> ที่นั่ง)<%= t.status === 'Maintenance' ? ' [ปิดปรับปรุง]' : '' %></option><% }) %></select></label>
+<label>เวลาเริ่มจอง<input type="datetime-local" name="booking_time" required></label>
+<label>สถานะ<select name="status" required><option value="Confirmed">ยืนยันแล้ว</option><option value="Completed">เสร็จสิ้น</option><option value="Cancelled">ยกเลิกแล้ว</option></select></label>
+<p class="hint">เวลาสิ้นสุดจะคำนวณอัตโนมัติ (+2 ชั่วโมง)</p>
+<div class="inline"><button class="btn btn-add" type="submit">บันทึก</button><a class="btn btn-cancel" href="/reservations">ยกเลิก</a></div>
+</form></section>

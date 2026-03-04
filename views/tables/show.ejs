@@ -1,0 +1,9 @@
+﻿<section class="card detail-card">
+<h2>โต๊ะ #<%= table.id %></h2>
+<p><strong>หมายเลขโต๊ะ:</strong> <%= table.table_number %></p>
+<p><strong>จำนวนที่นั่ง:</strong> <%= table.seat_count %></p>
+<p><strong>โซน:</strong> <%= table.zone_name %></p>
+<p><strong>สถานะ:</strong> <%= table.status === 'Available' ? 'ว่าง' : (table.status === 'Maintenance' ? 'ปิดปรับปรุง' : table.status) %></p>
+<div class="inline"><a class="btn btn-cancel" href="/tables/<%= table.id %>/edit">แก้ไข</a><form method="post" action="/tables/<%= table.id %>" onsubmit="return confirm('ลบโต๊ะนี้ใช่หรือไม่?')"><input type="hidden" name="_method" value="DELETE"><button class="btn btn-delete" type="submit">ลบ</button></form><a class="btn btn-primary" href="/tables">กลับ</a></div>
+</section>
+<section class="card"><h3>การจองของโต๊ะนี้</h3><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>ลูกค้า</th><th>เริ่ม</th><th>สิ้นสุด</th><th>สถานะ</th></tr></thead><tbody><% if (!reservations.length) { %><tr><td colspan="5" class="empty">ไม่พบข้อมูลการจอง</td></tr><% } %><% reservations.forEach((r) => { %><tr><td><%= r.id %></td><td><%= r.full_name %></td><td><%= r.booking_time %></td><td><%= r.end_time %></td><td><%= r.status === 'Confirmed' ? 'ยืนยันแล้ว' : (r.status === 'Completed' ? 'เสร็จสิ้น' : (r.status === 'Cancelled' ? 'ยกเลิกแล้ว' : r.status)) %></td></tr><% }) %></tbody></table></div></section>

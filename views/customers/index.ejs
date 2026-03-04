@@ -1,0 +1,33 @@
+﻿<section class="card page-head">
+    <h2>ลูกค้า</h2>
+    <a href="/customers/new" class="btn btn-add">เพิ่มใหม่</a>
+</section>
+<section class="card">
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr><th>ID</th><th>ชื่อ-นามสกุล</th><th>โทรศัพท์</th><th>อีเมล</th><th>วันที่ลงทะเบียน</th><th>การจัดการ</th></tr>
+            </thead>
+            <tbody>
+                <% if (!customers.length) { %><tr><td colspan="6" class="empty">ไม่พบข้อมูลลูกค้า</td></tr><% } %>
+                <% customers.forEach((item) => { %>
+                    <tr>
+                        <td><%= item.id %></td>
+                        <td><%= item.full_name %></td>
+                        <td><%= item.phone %></td>
+                        <td><%= item.email %></td>
+                        <td><%= item.register_date %></td>
+                        <td class="action-group">
+                            <a class="btn btn-primary" href="/customers/<%= item.id %>">ดู</a>
+                            <a class="btn btn-cancel" href="/customers/<%= item.id %>/edit">แก้ไข</a>
+                            <form method="post" action="/customers/<%= item.id %>" onsubmit="return confirm('ลบลูกค้าคนนี้ใช่หรือไม่?')">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button class="btn btn-delete" type="submit">ลบ</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</section>

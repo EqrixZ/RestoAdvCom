@@ -1,5 +1,4 @@
-const customerModel = require("../models/customerModel");
-const activityLogModel = require("../models/activityLogModel");
+const customerModel = require("../frontendModels/customerModel");
 const { renderPage, handleError, parseSqlError, redirectWithFlash, validateOrRedirect } = require("./httpHelpers");
 
 async function index(req, res) {
@@ -26,13 +25,12 @@ async function create(req, res) {
     if (validateOrRedirect(req, res, "/customers/new")) return;
     const { full_name, phone, email, register_date } = req.body;
     try {
-        const insertResult = await customerModel.create({
+        await customerModel.create({
             full_name: full_name.trim(),
             phone: phone.trim(),
             email: email.trim(),
             register_date: register_date || new Date().toISOString().slice(0, 10)
         });
-        await activityLogModel.create("Customer", `ลูกค้าใหม่: ${full_name.trim()} (#${insertResult.lastID})`);
         redirectWithFlash(res, "/customers", "success", "เพิ่มลูกค้าสำเร็จ");
     } catch (error) {
         redirectWithFlash(res, "/customers/new", "error", parseSqlError(error, "ไม่สามารถเพิ่มลูกค้าได้"));
@@ -96,5 +94,3 @@ module.exports = {
     update,
     remove
 };
-
-

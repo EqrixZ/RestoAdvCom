@@ -1,5 +1,5 @@
-const tableModel = require("../models/tableModel");
-const zoneModel = require("../models/zoneModel");
+const tableModel = require("../frontendModels/tableModel");
+const zoneModel = require("../frontendModels/zoneModel");
 const { renderPage, handleError, parseSqlError, redirectWithFlash, validateOrRedirect } = require("./httpHelpers");
 
 async function index(req, res) {
@@ -96,5 +96,6 @@ module.exports = {
     update,
     remove
 };
+
 
 

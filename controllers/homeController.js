@@ -1,8 +1,8 @@
-const customerModel = require("../models/customerModel");
-const zoneModel = require("../models/zoneModel");
-const tableModel = require("../models/tableModel");
-const reservationModel = require("../models/reservationModel");
-const activityLogModel = require("../models/activityLogModel");
+const customerModel = require("../frontendModels/customerModel");
+const zoneModel = require("../frontendModels/zoneModel");
+const tableModel = require("../frontendModels/tableModel");
+const reservationModel = require("../frontendModels/reservationModel");
+const activityLogModel = require("../frontendModels/activityLogModel");
 const { renderPage, handleError } = require("./httpHelpers");
 
 async function home(req, res) {
@@ -39,5 +39,6 @@ async function home(req, res) {
 module.exports = {
     home
 };
+
 
 

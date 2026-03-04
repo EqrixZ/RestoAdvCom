@@ -1,6 +1,6 @@
-const reservationModel = require("../models/reservationModel");
-const zoneModel = require("../models/zoneModel");
-const reportModel = require("../models/reportModel");
+const reservationModel = require("../frontendModels/reservationModel");
+const zoneModel = require("../frontendModels/zoneModel");
+const reportModel = require("../frontendModels/reportModel");
 const { renderPage, handleError } = require("./httpHelpers");
 
 function index(req, res) {
@@ -46,5 +46,6 @@ module.exports = {
     dailyTableUsage,
     zoneVisitors
 };
+
 
 

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestoBook - <%= title %></title>
+    <script>
+        (function () {
+            var saved = localStorage.getItem("restobook-theme");
+            if (saved === "dark") {
+                document.documentElement.setAttribute("data-theme", "dark");
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="auth-theme-bar">
+        <button type="button" id="theme-toggle" class="btn btn-cancel theme-toggle">โหมดมืด</button>
+    </div>
+    <main class="auth-page">
+        <section class="container auth-container">
+            <% if (flashMessage) { %>
+                <div class="flash flash-<%= flashType === "error" ? "error" : "success" %>">
+                    <%= flashMessage %>
+                </div>
+            <% } %>
+            <%- include(content) %>
+        </section>
+    </main>
+    <script src="/js/theme.js"></script>
+</body>
+</html>

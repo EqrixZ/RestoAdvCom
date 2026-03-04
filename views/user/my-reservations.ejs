@@ -1,0 +1,49 @@
+<section class="card page-head">
+    <h2>การจองของฉัน</h2>
+</section>
+
+<section class="card">
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>โต๊ะ</th>
+                    <th>โซน</th>
+                    <th>เริ่ม</th>
+                    <th>สิ้นสุด</th>
+                    <th>สถานะ</th>
+                    <th>การจัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!reservations.length) { %>
+                    <tr><td colspan="7" class="empty">ไม่พบรายการจอง</td></tr>
+                <% } else { %>
+                    <% reservations.forEach((item) => { %>
+                        <tr>
+                            <td><%= item.id %></td>
+                            <td><%= item.table_number %></td>
+                            <td><%= item.zone_name %></td>
+                            <td><%= item.booking_time %></td>
+                            <td><%= item.end_time %></td>
+                            <td>
+                                <%= item.status === "Confirmed" ? "ยืนยันแล้ว" : (item.status === "Completed" ? "เสร็จสิ้น" : "ยกเลิกแล้ว") %>
+                            </td>
+                            <td>
+                                <% if (item.status === "Confirmed") { %>
+                                    <form method="post" action="/user/reservations/<%= item.id %>/cancel" onsubmit="return confirm('ยืนยันการยกเลิกใช่หรือไม่?')">
+                                        <input type="hidden" name="_method" value="PUT">
+                                        <button class="btn btn-delete" type="submit">ยกเลิกการจอง</button>
+                                    </form>
+                                <% } else { %>
+                                    <span class="muted">ไม่มี</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</section>

@@ -1,0 +1,18 @@
+<section class="card auth-card">
+    <h2>เข้าสู่ระบบผู้ใช้</h2>
+    <form class="form" method="post" action="/login/user">
+        <input type="hidden" name="next" value="<%= next || '' %>">
+        <label>
+            อีเมล
+            <input type="email" name="email" required>
+        </label>
+        <label>
+            เบอร์โทร
+            <input type="text" name="phone" required>
+        </label>
+        <div class="inline">
+            <button type="submit" class="btn btn-primary">เข้าสู่ระบบ</button>
+            <a href="/login" class="btn btn-cancel">ย้อนกลับ</a>
+        </div>
+    </form>
+</section>

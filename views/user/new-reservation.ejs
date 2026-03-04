@@ -1,0 +1,27 @@
+<section class="card form-card">
+    <h2>จองโต๊ะ</h2>
+    <form class="form" method="post" action="/user/reservations">
+        <label>
+            โต๊ะ
+            <select name="table_id" required>
+                <option value="">เลือกโต๊ะ</option>
+                <% tables.forEach((table) => { %>
+                    <option value="<%= table.id %>">
+                        โต๊ะ <%= table.table_number %> - <%= table.zone_name %> (<%= table.seat_count %> ที่นั่ง)
+                    </option>
+                <% }) %>
+            </select>
+        </label>
+
+        <label>
+            เวลาเริ่มจอง
+            <input type="datetime-local" name="booking_time" value="<%= reservation.booking_time %>" required>
+        </label>
+
+        <p class="hint">ระบบจะคำนวณเวลาสิ้นสุดให้อัตโนมัติ (+2 ชั่วโมง)</p>
+        <div class="inline">
+            <button class="btn btn-add" type="submit">ยืนยันการจอง</button>
+            <a class="btn btn-cancel" href="/user/home">ยกเลิก</a>
+        </div>
+    </form>
+</section>

@@ -1,9 +1,9 @@
 const express = require("express");
 const homeController = require("../controllers/homeController");
+const { requireAdmin } = require("../middleware/authGuards");
 
 const router = express.Router();
 
-router.get("/", (req, res) => res.redirect("/home"));
-router.get("/home", homeController.home);
+router.get("/home", requireAdmin, homeController.home);
 
 module.exports = router;

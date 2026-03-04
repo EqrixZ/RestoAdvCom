@@ -27,6 +27,12 @@
             <a href="/tables" class="<%= activePage === 'tables' ? 'active' : '' %>">โต๊ะอาหาร</a>
             <a href="/reservations" class="<%= activePage === 'reservations' ? 'active' : '' %>">การจอง</a>
             <a href="/reports/daily-table-usage" class="<%= activePage === 'reports' ? 'active' : '' %>">รายงาน</a>
+            <a href="/login/user">เข้าสู่ระบบผู้ใช้</a>
         </nav>
-        <button type="button" id="theme-toggle" class="btn btn-cancel theme-toggle">โหมดมืด</button>
+        <div class="inline">
+            <button type="button" id="theme-toggle" class="btn btn-cancel theme-toggle">โหมดมืด</button>
+            <form method="post" action="/logout">
+                <button type="submit" class="btn btn-delete">ออกจากระบบ</button>
+            </form>
+        </div>
     </header>

@@ -1,0 +1,47 @@
+<section class="card page-head">
+    <h2>โต๊ะที่ว่างและช่วงเวลา</h2>
+    <form class="inline" method="get" action="/user/home">
+        <label>
+            วันที่
+            <input type="date" name="date" value="<%= date %>" required>
+        </label>
+        <button class="btn btn-primary" type="submit">แสดงผล</button>
+    </form>
+</section>
+
+<section class="card">
+    <div class="availability-summary">
+        <span class="availability-summary__label">จำนวนโต๊ะที่พร้อมจอง</span>
+        <strong class="availability-summary__value"><%= tableCount %> โต๊ะ</strong>
+    </div>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ช่วงเวลา</th>
+                    <th>จำนวนโต๊ะว่าง</th>
+                    <th>โต๊ะที่ว่าง</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% availabilityBySlot.forEach((slot) => { %>
+                    <tr>
+                        <td><%= slot.label %></td>
+                        <td><strong><%= slot.availableTables.length %></strong> โต๊ะ</td>
+                        <td>
+                            <% if (!slot.availableTables.length) { %>
+                                <span class="empty">ไม่มีโต๊ะว่าง</span>
+                            <% } else { %>
+                                <div class="pill-list">
+                                    <% slot.availableTables.forEach((table) => { %>
+                                        <span class="pill">โต๊ะ <%= table.table_number %> - <%= table.zone_name %> - <%= table.seat_count %> ที่นั่ง</span>
+                                    <% }) %>
+                                </div>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</section>

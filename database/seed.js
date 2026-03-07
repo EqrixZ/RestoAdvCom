@@ -64,19 +64,30 @@ async function ensureSchema() {
             table_id INTEGER NOT NULL,
             booking_time TEXT NOT NULL,
             end_time TEXT NOT NULL,
+            party_size INTEGER NOT NULL DEFAULT 1 CHECK (party_size > 0),
             status TEXT NOT NULL CHECK (status IN ('Confirmed', 'Completed', 'Cancelled')) DEFAULT 'Confirmed',
             FOREIGN KEY (customer_id) REFERENCES Customers(id) ON DELETE RESTRICT,
             FOREIGN KEY (table_id) REFERENCES DiningTables(id) ON DELETE RESTRICT
         )
     `);
+
+    await run(`
+        CREATE TABLE IF NOT EXISTS ActivityLogs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            activity_type TEXT NOT NULL,
+            activity_text TEXT NOT NULL,
+            activity_time TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
+        )
+    `);
 }
 
 async function clearData() {
+    await run("DELETE FROM ActivityLogs");
     await run("DELETE FROM Reservations");
     await run("DELETE FROM DiningTables");
     await run("DELETE FROM Customers");
     await run("DELETE FROM Zones");
-    await run("DELETE FROM sqlite_sequence WHERE name IN ('Reservations', 'DiningTables', 'Customers', 'Zones')");
+    await run("DELETE FROM sqlite_sequence WHERE name IN ('ActivityLogs', 'Reservations', 'DiningTables', 'Customers', 'Zones')");
 }
 
 async function seed() {
@@ -86,13 +97,9 @@ async function seed() {
     const zones = [
         ["Indoor A", "Main hall near cashier", 0],
         ["Indoor B", "Quiet corner with AC", 0],
-        ["Garden Front", "Near entrance garden", 40],
-        ["Garden Back", "Shaded outdoor seating", 30],
+        ["Garden Back", "Shaded outdoor seating", 0],
         ["VIP Room 1", "Private room for meetings", 200],
         ["VIP Room 2", "Private room for family", 220],
-        ["Balcony", "City-view balcony tables", 60],
-        ["Riverside", "Outdoor riverside view", 80],
-        ["Bar Counter", "Counter seats near bar", 20],
         ["Rooftop", "Open-air rooftop dining", 120]
     ];
 
@@ -133,24 +140,22 @@ async function seed() {
     const tables = [
         ["A01", 2, zoneRows[0], "Available"],
         ["A02", 4, zoneRows[0], "Available"],
+        ["A03", 6, zoneRows[0], "Available"],
+        ["A04", 8, zoneRows[0], "Available"],
         ["B01", 2, zoneRows[1], "Available"],
         ["B02", 6, zoneRows[1], "Available"],
-        ["GF1", 4, zoneRows[2], "Available"],
-        ["GF2", 6, zoneRows[2], "Maintenance"],
-        ["GB1", 4, zoneRows[3], "Available"],
-        ["GB2", 8, zoneRows[3], "Available"],
-        ["V1-1", 8, zoneRows[4], "Available"],
-        ["V1-2", 10, zoneRows[4], "Available"],
-        ["V2-1", 8, zoneRows[5], "Available"],
-        ["V2-2", 12, zoneRows[5], "Maintenance"],
-        ["BL1", 2, zoneRows[6], "Available"],
-        ["BL2", 4, zoneRows[6], "Available"],
-        ["RS1", 4, zoneRows[7], "Available"],
-        ["RS2", 6, zoneRows[7], "Available"],
-        ["BAR1", 2, zoneRows[8], "Available"],
-        ["BAR2", 2, zoneRows[8], "Available"],
-        ["RT1", 6, zoneRows[9], "Available"],
-        ["RT2", 8, zoneRows[9], "Available"]
+        ["B03", 4, zoneRows[1], "Available"],
+        ["B04", 8, zoneRows[1], "Available"],
+        ["GB1", 4, zoneRows[2], "Available"],
+        ["GB2", 8, zoneRows[2], "Available"],
+        ["GB3", 6, zoneRows[2], "Available"],
+        ["GB4", 10, zoneRows[2], "Available"],
+        ["V1-1", 14, zoneRows[3], "Available"],
+        ["V2-1", 10, zoneRows[4], "Available"],
+        ["RT1", 6, zoneRows[5], "Available"],
+        ["RT2", 8, zoneRows[5], "Available"],
+        ["RT3", 10, zoneRows[5], "Available"],
+        ["RT4", 12, zoneRows[5], "Available"]
     ];
 
     for (const table of tables) {
@@ -182,23 +187,27 @@ async function seed() {
     for (let i = 0; i < 20; i += 1) {
         const customerId = customerIds[i % customerIds.length];
         const tableId = tableIds[(i * 2) % tableIds.length];
+        const tableRow = await get("SELECT seat_count FROM DiningTables WHERE id = ?", [tableId]);
+        const seatCount = Number(tableRow && tableRow.seat_count ? tableRow.seat_count : 1);
         const start = new Date(base);
         start.setHours(base.getHours() + (i % 5) * 2);
         start.setDate(base.getDate() + Math.floor(i / 5));
         const end = new Date(start);
         end.setHours(end.getHours() + 2);
         const status = statuses[i % statuses.length];
+        const desiredPartySize = 2 + (i % 4);
+        const partySize = Math.max(1, Math.min(seatCount, desiredPartySize));
 
         await run(
-            "INSERT INTO Reservations (customer_id, table_id, booking_time, end_time, status) VALUES (?, ?, ?, ?, ?)",
-            [customerId, tableId, toSqliteDateTime(start), toSqliteDateTime(end), status]
+            "INSERT INTO Reservations (customer_id, table_id, booking_time, end_time, party_size, status) VALUES (?, ?, ?, ?, ?, ?)",
+            [customerId, tableId, toSqliteDateTime(start), toSqliteDateTime(end), partySize, status]
         );
     }
 }
 
 seed()
     .then(() => {
-        console.log("Seed completed: 12 customers, 10 zones, 20 tables, 20 reservations.");
+        console.log("Seed completed: 12 customers, 6 zones, 18 tables, 20 reservations.");
         db.close();
     })
     .catch((error) => {

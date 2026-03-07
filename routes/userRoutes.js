@@ -11,6 +11,7 @@ router.get("/user/home", userController.home);
 router.get("/user/reservations/new", userController.newReservationForm);
 router.post("/user/reservations", [
     body("table_id").isInt({ min: 1 }).withMessage("กรุณาเลือกโต๊ะ"),
+    body("party_size").isInt({ min: 1 }).withMessage("จำนวนลูกค้าต้องเป็นตัวเลขมากกว่า 0"),
     body("booking_time")
         .notEmpty()
         .withMessage("กรุณาเลือกเวลาเริ่มจอง")

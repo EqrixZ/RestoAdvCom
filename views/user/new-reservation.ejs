@@ -3,10 +3,10 @@
     <form class="form" method="post" action="/user/reservations">
         <label>
             โต๊ะ
-            <select name="table_id" required>
+            <select id="user-table-select" name="table_id" required>
                 <option value="">เลือกโต๊ะ</option>
                 <% tables.forEach((table) => { %>
-                    <option value="<%= table.id %>">
+                    <option value="<%= table.id %>" data-seats="<%= table.seat_count %>" <%= Number(reservation.table_id) === Number(table.id) ? 'selected' : '' %>>
                         โต๊ะ <%= table.table_number %> - <%= table.zone_name %> (<%= table.seat_count %> ที่นั่ง)
                     </option>
                 <% }) %>
@@ -18,6 +18,12 @@
             <input type="datetime-local" name="booking_time" value="<%= reservation.booking_time %>" required>
         </label>
 
+        <label>
+            จำนวนลูกค้า
+            <input id="user-party-size" type="number" name="party_size" min="1" value="<%= reservation.party_size || 2 %>" required>
+        </label>
+        <p id="user-seat-hint" class="hint">เลือกจำนวนลูกค้าไม่เกินจำนวนที่นั่งของโต๊ะที่เลือก</p>
+
         <p class="hint">ระบบจะคำนวณเวลาสิ้นสุดให้อัตโนมัติ (+2 ชั่วโมง)</p>
         <div class="inline">
             <button class="btn btn-add" type="submit">ยืนยันการจอง</button>
@@ -25,3 +31,27 @@
         </div>
     </form>
 </section>
+<script>
+    (function () {
+        var tableSelect = document.getElementById("user-table-select");
+        var partyInput = document.getElementById("user-party-size");
+        var hint = document.getElementById("user-seat-hint");
+        if (!tableSelect || !partyInput || !hint) return;
+
+        function syncPartyLimit() {
+            var opt = tableSelect.options[tableSelect.selectedIndex];
+            var seats = opt ? Number(opt.getAttribute("data-seats") || 0) : 0;
+            if (seats > 0) {
+                partyInput.max = String(seats);
+                hint.textContent = "โต๊ะนี้รองรับสูงสุด " + seats + " คน";
+                if (Number(partyInput.value || 0) > seats) partyInput.value = String(seats);
+            } else {
+                partyInput.removeAttribute("max");
+                hint.textContent = "เลือกจำนวนลูกค้าไม่เกินจำนวนที่นั่งของโต๊ะที่เลือก";
+            }
+        }
+
+        tableSelect.addEventListener("change", syncPartyLimit);
+        syncPartyLimit();
+    })();
+</script>

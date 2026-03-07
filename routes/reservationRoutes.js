@@ -9,6 +9,7 @@ router.get("/reservations/new", reservationsController.newForm);
 router.post("/reservations", [
     body("customer_id").isInt({ min: 1 }).withMessage("กรุณาเลือกลูกค้า"),
     body("table_id").isInt({ min: 1 }).withMessage("กรุณาเลือกโต๊ะ"),
+    body("party_size").optional().isInt({ min: 1 }).withMessage("จำนวนลูกค้าต้องเป็นตัวเลขมากกว่า 0"),
     body("booking_time").notEmpty().withMessage("กรุณาเลือกเวลาเริ่มจอง").bail().isISO8601().withMessage("เวลาเริ่มจองไม่ถูกต้อง"),
     body("status").optional().isIn(["Confirmed", "Completed", "Cancelled"]).withMessage("สถานะไม่ถูกต้อง")
 ], reservationsController.create);
@@ -18,6 +19,7 @@ router.put("/reservations/:id", [
     param("id").isInt({ min: 1 }).withMessage("รหัสการจองไม่ถูกต้อง"),
     body("customer_id").isInt({ min: 1 }).withMessage("กรุณาเลือกลูกค้า"),
     body("table_id").isInt({ min: 1 }).withMessage("กรุณาเลือกโต๊ะ"),
+    body("party_size").optional().isInt({ min: 1 }).withMessage("จำนวนลูกค้าต้องเป็นตัวเลขมากกว่า 0"),
     body("booking_time").notEmpty().withMessage("กรุณาเลือกเวลาเริ่มจอง").bail().isISO8601().withMessage("เวลาเริ่มจองไม่ถูกต้อง"),
     body("status").isIn(["Confirmed", "Completed", "Cancelled"]).withMessage("สถานะไม่ถูกต้อง")
 ], reservationsController.update);

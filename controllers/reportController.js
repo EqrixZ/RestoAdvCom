@@ -30,8 +30,10 @@ async function zoneVisitors(req, res) {
     try {
         const zones = await zoneModel.listSimple();
         const rows = await reportModel.zoneVisitorsByDate(date, zoneId);
+        const zoneCount = new Set(rows.map((row) => Number(row.id))).size;
         const summary = {
-            zones: rows.length,
+            zones: zoneCount,
+            slots: rows.length,
             reservations: rows.reduce((acc, row) => acc + Number(row.reservation_count || 0), 0),
             visitors: rows.reduce((acc, row) => acc + Number(row.estimated_visitors || 0), 0)
         };
@@ -46,6 +48,5 @@ module.exports = {
     dailyTableUsage,
     zoneVisitors
 };
-
 
 

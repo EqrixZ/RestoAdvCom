@@ -21,46 +21,59 @@ function resolveNextUrl(req, fallback) {
 function loginPage(req, res) {
     if (req.auth && req.auth.role === "admin") return res.redirect("/home");
     if (req.auth && req.auth.role === "user") return res.redirect("/user/home");
-    renderAuthPage(res, { title: "เลือกประเภทผู้ใช้", content: "choice" });
-}
-
-function userLoginForm(req, res) {
-    if (req.auth && req.auth.role === "user") return res.redirect("/user/home");
     renderAuthPage(res, {
-        title: "เข้าสู่ระบบผู้ใช้",
-        content: "user-login",
+        title: "เข้าสู่ระบบ",
+        content: "login",
         next: req.query.next || "",
         flashType: req.query.flashType,
         flashMessage: req.query.flashMessage
     });
 }
 
-async function userLogin(req, res) {
+async function login(req, res) {
     const email = String(req.body.email || "").trim().toLowerCase();
-    const phone = String(req.body.phone || "").trim();
-    const nextUrl = resolveNextUrl(req, "/user/home");
-    if (!email || !phone) {
+    const password = String(req.body.password || "").trim();
+    if (!email || !password) {
         const params = new URLSearchParams({
             flashType: "error",
-            flashMessage: "กรุณากรอกอีเมลและเบอร์โทรให้ครบ",
-            next: nextUrl
+            flashMessage: "กรุณากรอกอีเมลและรหัสผ่านให้ครบ",
+            next: req.body.next || ""
         });
-        return res.redirect(`/login/user?${params.toString()}`);
+        return res.redirect(`/login?${params.toString()}`);
     }
 
+    const adminEmail = String(process.env.ADMIN_EMAIL || "admin@restobook.com").trim().toLowerCase();
+    const adminPassword = String(process.env.ADMIN_PASSWORD || "admin123");
+
+    if (email === adminEmail) {
+        const nextUrl = resolveNextUrl(req, "/home");
+        if (password !== adminPassword) {
+            const params = new URLSearchParams({
+                flashType: "error",
+                flashMessage: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
+                next: nextUrl
+            });
+            return res.redirect(`/login?${params.toString()}`);
+        }
+
+        createSession(res, { role: "admin", adminName: adminEmail });
+        return res.redirect(nextUrl);
+    }
+
+    const nextUrl = resolveNextUrl(req, "/user/home");
     try {
         const customers = await customerModel.list();
         const customer = customers.find(
-            (row) => String(row.email || "").trim().toLowerCase() === email && String(row.phone || "").trim() === phone
+            (row) => String(row.email || "").trim().toLowerCase() === email && String(row.phone || "").trim() === password
         );
 
         if (!customer) {
             const params = new URLSearchParams({
                 flashType: "error",
-                flashMessage: "อีเมลหรือเบอร์โทรไม่ถูกต้อง",
+                flashMessage: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
                 next: nextUrl
             });
-            return res.redirect(`/login/user?${params.toString()}`);
+            return res.redirect(`/login?${params.toString()}`);
         }
 
         createSession(res, {
@@ -75,37 +88,6 @@ async function userLogin(req, res) {
     }
 }
 
-function adminLoginForm(req, res) {
-    if (req.auth && req.auth.role === "admin") return res.redirect("/home");
-    renderAuthPage(res, {
-        title: "เข้าสู่ระบบผู้ดูแล",
-        content: "admin-login",
-        next: req.query.next || "",
-        flashType: req.query.flashType,
-        flashMessage: req.query.flashMessage
-    });
-}
-
-function adminLogin(req, res) {
-    const username = String(req.body.username || "").trim();
-    const password = String(req.body.password || "");
-    const adminUsername = process.env.ADMIN_USERNAME || "admin";
-    const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
-    const nextUrl = resolveNextUrl(req, "/home");
-
-    if (username !== adminUsername || password !== adminPassword) {
-        const params = new URLSearchParams({
-            flashType: "error",
-            flashMessage: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
-            next: nextUrl
-        });
-        return res.redirect(`/login/admin?${params.toString()}`);
-    }
-
-    createSession(res, { role: "admin", adminName: username });
-    return res.redirect(nextUrl);
-}
-
 function logout(req, res) {
     destroySession(req, res);
     return res.redirect("/login");
@@ -113,9 +95,6 @@ function logout(req, res) {
 
 module.exports = {
     loginPage,
-    userLoginForm,
-    userLogin,
-    adminLoginForm,
-    adminLogin,
+    login,
     logout
 };

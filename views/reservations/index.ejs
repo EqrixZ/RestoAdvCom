@@ -1,7 +1,69 @@
-﻿<section class="card page-head"><h2>การจอง</h2><a href="/reservations/new" class="btn btn-add">เพิ่มใหม่</a></section>
-<section class="card"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>ลูกค้า</th><th>โต๊ะ</th><th>โซน</th><th>เริ่ม</th><th>สิ้นสุด</th><th>สถานะ</th><th>การจัดการ</th></tr></thead><tbody>
-<% if (!reservations.length) { %><tr><td colspan="8" class="empty">ไม่พบข้อมูลการจอง</td></tr><% } %>
-<% reservations.forEach((item) => { %>
-<tr><td><%= item.id %></td><td><%= item.customer_name %></td><td><%= item.table_number %></td><td><%= item.zone_name %></td><td><%= item.booking_time %></td><td><%= item.end_time %></td><td><%= item.status === 'Confirmed' ? 'ยืนยันแล้ว' : (item.status === 'Completed' ? 'เสร็จสิ้น' : (item.status === 'Cancelled' ? 'ยกเลิกแล้ว' : item.status)) %></td><td class="action-group"><a class="btn btn-primary" href="/reservations/<%= item.id %>">ดู</a><a class="btn btn-cancel" href="/reservations/<%= item.id %>/edit">แก้ไข</a><form method="post" action="/reservations/<%= item.id %>" onsubmit="return confirm('ลบการจองนี้ใช่หรือไม่?')"><input type="hidden" name="_method" value="DELETE"><button class="btn btn-delete" type="submit">ลบ</button></form></td></tr>
-<% }) %>
-</tbody></table></div></section>
+<section class="card page-head">
+    <h2>การจอง</h2>
+    <a href="/reservations/new" class="btn btn-add">เพิ่มใหม่</a>
+</section>
+
+<section class="card">
+    <form class="inline-filter" method="get" action="/reservations">
+        <label>
+            ค้นหาชื่อลูกค้า
+            <input type="text" name="customer_name" value="<%= customerNameQuery || '' %>" placeholder="พิมพ์ชื่อลูกค้า">
+        </label>
+        <div class="inline">
+            <button type="submit" class="btn btn-primary">ค้นหา</button>
+            <% if (customerNameQuery) { %>
+                <a href="/reservations" class="btn btn-cancel">ล้างตัวกรอง</a>
+            <% } %>
+        </div>
+    </form>
+</section>
+
+<section class="card">
+    <p class="muted">ผลลัพธ์ทั้งหมด <strong><%= reservations.length %></strong> รายการ</p>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ลูกค้า</th>
+                    <th>โต๊ะ</th>
+                    <th>โซน</th>
+                    <th>จำนวนลูกค้า</th>
+                    <th>เริ่ม</th>
+                    <th>สิ้นสุด</th>
+                    <th>สถานะ</th>
+                    <th>การจัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!reservations.length) { %>
+                    <tr>
+                        <td colspan="9" class="empty">ไม่พบข้อมูลการจอง</td>
+                    </tr>
+                <% } %>
+                <% reservations.forEach((item) => { %>
+                    <tr>
+                        <td><%= item.id %></td>
+                        <td><%= item.customer_name %></td>
+                        <td><%= item.table_number %></td>
+                        <td><%= item.zone_name %></td>
+                        <td><%= item.party_size || 1 %></td>
+                        <td><%= item.booking_time %></td>
+                        <td><%= item.end_time %></td>
+                        <td>
+                            <%= item.status === "Confirmed" ? "ยืนยันแล้ว" : (item.status === "Completed" ? "เสร็จสิ้น" : (item.status === "Cancelled" ? "ยกเลิกแล้ว" : item.status)) %>
+                        </td>
+                        <td class="action-group">
+                            <a class="btn btn-primary" href="/reservations/<%= item.id %>">ดู</a>
+                            <a class="btn btn-cancel" href="/reservations/<%= item.id %>/edit">แก้ไข</a>
+                            <form method="post" action="/reservations/<%= item.id %>" onsubmit="return confirm('ลบการจองนี้ใช่หรือไม่?')">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button class="btn btn-delete" type="submit">ลบ</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</section>

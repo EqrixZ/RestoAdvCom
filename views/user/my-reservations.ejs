@@ -1,5 +1,8 @@
 <section class="card page-head">
-    <h2>การจองของฉัน</h2>
+    <div>
+        <h2>การจองของฉัน</h2>
+        <p class="muted">ตรวจสอบสถานะและยกเลิกเฉพาะรายการที่ยังยืนยันอยู่</p>
+    </div>
 </section>
 
 <section class="card">
@@ -10,6 +13,7 @@
                     <th>ID</th>
                     <th>โต๊ะ</th>
                     <th>โซน</th>
+                    <th>จำนวนลูกค้า</th>
                     <th>เริ่ม</th>
                     <th>สิ้นสุด</th>
                     <th>สถานะ</th>
@@ -18,17 +22,20 @@
             </thead>
             <tbody>
                 <% if (!reservations.length) { %>
-                    <tr><td colspan="7" class="empty">ไม่พบรายการจอง</td></tr>
+                    <tr><td colspan="8" class="empty">ไม่พบรายการจอง</td></tr>
                 <% } else { %>
                     <% reservations.forEach((item) => { %>
                         <tr>
                             <td><%= item.id %></td>
                             <td><%= item.table_number %></td>
                             <td><%= item.zone_name %></td>
+                            <td><%= item.party_size || 1 %></td>
                             <td><%= item.booking_time %></td>
                             <td><%= item.end_time %></td>
                             <td>
-                                <%= item.status === "Confirmed" ? "ยืนยันแล้ว" : (item.status === "Completed" ? "เสร็จสิ้น" : "ยกเลิกแล้ว") %>
+                                <span class="badge <%= item.status === 'Confirmed' ? 'info' : (item.status === 'Completed' ? 'ok' : 'warn') %>">
+                                    <%= item.status === "Confirmed" ? "ยืนยันแล้ว" : (item.status === "Completed" ? "เสร็จสิ้น" : "ยกเลิกแล้ว") %>
+                                </span>
                             </td>
                             <td>
                                 <% if (item.status === "Confirmed") { %>

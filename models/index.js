@@ -69,11 +69,17 @@ async function initDb() {
             table_id INTEGER NOT NULL,
             booking_time TEXT NOT NULL,
             end_time TEXT NOT NULL,
+            party_size INTEGER NOT NULL DEFAULT 1 CHECK (party_size > 0),
             status TEXT NOT NULL CHECK (status IN ('Confirmed', 'Completed', 'Cancelled')) DEFAULT 'Confirmed',
             FOREIGN KEY (customer_id) REFERENCES Customers(id) ON DELETE RESTRICT,
             FOREIGN KEY (table_id) REFERENCES DiningTables(id) ON DELETE RESTRICT
         )
     `);
+    const reservationColumns = await all("PRAGMA table_info(Reservations)");
+    const hasPartySize = reservationColumns.some((column) => column.name === "party_size");
+    if (!hasPartySize) {
+        await run("ALTER TABLE Reservations ADD COLUMN party_size INTEGER NOT NULL DEFAULT 1");
+    }
     await run(`
         CREATE TABLE IF NOT EXISTS ActivityLogs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

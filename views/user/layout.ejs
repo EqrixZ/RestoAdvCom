@@ -14,7 +14,7 @@
     </script>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
+<body class="app app-user">
     <header class="topbar">
         <div class="brand">
             <h1>RestoBook User</h1>
@@ -24,7 +24,6 @@
             <a href="/user/home" class="<%= activePage === 'user-home' ? 'active' : '' %>">โต๊ะว่างและเวลา</a>
             <a href="/user/reservations/new" class="<%= activePage === 'user-book' ? 'active' : '' %>">จองโต๊ะ</a>
             <a href="/user/reservations" class="<%= activePage === 'user-my-reservations' ? 'active' : '' %>">การจองของฉัน</a>
-            <a href="/login/admin">เข้าสู่ระบบแอดมิน</a>
         </nav>
         <div class="inline">
             <button type="button" id="theme-toggle" class="btn btn-cancel theme-toggle">โหมดมืด</button>

@@ -14,11 +14,11 @@
     </script>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
+<body class="app app-admin">
     <header class="topbar">
         <div class="brand">
-            <h1>RestoBook</h1>
-            <p>จองโต๊ะแบบเรียลไทม์ รอบละ 2 ชั่วโมง</p>
+            <h1>RestoBook Admin</h1>
+            <p>จัดการข้อมูลร้านและการจองโต๊ะแบบเรียลไทม์</p>
         </div>
         <nav class="nav">
             <a href="/home" class="<%= activePage === 'home' ? 'active' : '' %>">หน้าแรก</a>
@@ -27,7 +27,6 @@
             <a href="/tables" class="<%= activePage === 'tables' ? 'active' : '' %>">โต๊ะอาหาร</a>
             <a href="/reservations" class="<%= activePage === 'reservations' ? 'active' : '' %>">การจอง</a>
             <a href="/reports/daily-table-usage" class="<%= activePage === 'reports' ? 'active' : '' %>">รายงาน</a>
-            <a href="/login/user">เข้าสู่ระบบผู้ใช้</a>
         </nav>
         <div class="inline">
             <button type="button" id="theme-toggle" class="btn btn-cancel theme-toggle">โหมดมืด</button>

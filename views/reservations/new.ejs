@@ -1,8 +1,32 @@
 ﻿<section class="card form-card"><h2>การจองใหม่</h2><form class="form" method="post" action="/reservations">
 <label>ลูกค้า<select name="customer_id" required><option value="">เลือกลูกค้า</option><% customers.forEach((c) => { %><option value="<%= c.id %>"><%= c.full_name %> (<%= c.phone %>)</option><% }) %></select></label>
-<label>โต๊ะ<select name="table_id" required><option value="">เลือกโต๊ะ</option><% tables.forEach((t) => { %><option value="<%= t.id %>" <%= t.status === 'Maintenance' ? 'disabled' : '' %>><%= t.table_number %> - <%= t.zone_name %> (<%= t.seat_count %> ที่นั่ง)<%= t.status === 'Maintenance' ? ' [ปิดปรับปรุง]' : '' %></option><% }) %></select></label>
+<label>โต๊ะ<select id="admin-table-select-new" name="table_id" required><option value="">เลือกโต๊ะ</option><% tables.forEach((t) => { %><option value="<%= t.id %>" data-seats="<%= t.seat_count %>" <%= t.status === 'Maintenance' ? 'disabled' : '' %>><%= t.table_number %> - <%= t.zone_name %> (<%= t.seat_count %> ที่นั่ง)<%= t.status === 'Maintenance' ? ' [ปิดปรับปรุง]' : '' %></option><% }) %></select></label>
 <label>เวลาเริ่มจอง<input type="datetime-local" name="booking_time" required></label>
+<label>จำนวนลูกค้า<input id="admin-party-size-new" type="number" name="party_size" min="1" value="2" required></label>
+<p id="admin-seat-hint-new" class="hint">เลือกจำนวนลูกค้าไม่เกินจำนวนที่นั่งของโต๊ะที่เลือก</p>
 <label>สถานะ<select name="status" required><option value="Confirmed">ยืนยันแล้ว</option><option value="Completed">เสร็จสิ้น</option><option value="Cancelled">ยกเลิกแล้ว</option></select></label>
 <p class="hint">เวลาสิ้นสุดจะคำนวณอัตโนมัติ (+2 ชั่วโมง)</p>
 <div class="inline"><button class="btn btn-add" type="submit">บันทึก</button><a class="btn btn-cancel" href="/reservations">ยกเลิก</a></div>
 </form></section>
+<script>
+    (function () {
+        var tableSelect = document.getElementById("admin-table-select-new");
+        var partyInput = document.getElementById("admin-party-size-new");
+        var hint = document.getElementById("admin-seat-hint-new");
+        if (!tableSelect || !partyInput || !hint) return;
+        function syncPartyLimit() {
+            var opt = tableSelect.options[tableSelect.selectedIndex];
+            var seats = opt ? Number(opt.getAttribute("data-seats") || 0) : 0;
+            if (seats > 0) {
+                partyInput.max = String(seats);
+                hint.textContent = "โต๊ะนี้รองรับสูงสุด " + seats + " คน";
+                if (Number(partyInput.value || 0) > seats) partyInput.value = String(seats);
+            } else {
+                partyInput.removeAttribute("max");
+                hint.textContent = "เลือกจำนวนลูกค้าไม่เกินจำนวนที่นั่งของโต๊ะที่เลือก";
+            }
+        }
+        tableSelect.addEventListener("change", syncPartyLimit);
+        syncPartyLimit();
+    })();
+</script>

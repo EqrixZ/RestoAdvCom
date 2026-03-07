@@ -3,6 +3,7 @@
 <p><strong>ลูกค้า:</strong> <%= reservation.customer_name %> (<%= reservation.customer_phone %>)</p>
 <p><strong>อีเมล:</strong> <%= reservation.customer_email %></p>
 <p><strong>โต๊ะ:</strong> <%= reservation.table_number %> - <%= reservation.zone_name %> (<%= reservation.seat_count %> ที่นั่ง)</p>
+<p><strong>จำนวนลูกค้า:</strong> <%= reservation.party_size || 1 %></p>
 <p><strong>เวลาเริ่ม:</strong> <%= reservation.booking_time %></p>
 <p><strong>เวลาสิ้นสุด:</strong> <%= reservation.end_time %></p>
 <p><strong>สถานะ:</strong> <%= reservation.status === 'Confirmed' ? 'ยืนยันแล้ว' : (reservation.status === 'Completed' ? 'เสร็จสิ้น' : (reservation.status === 'Cancelled' ? 'ยกเลิกแล้ว' : reservation.status)) %></p>

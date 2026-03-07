@@ -21,12 +21,18 @@ async function loadReservationFormData() {
 
 async function index(req, res) {
     try {
-        const reservations = await reservationModel.listWithDetails();
+        const customerNameQuery = String(req.query.customer_name || "").trim();
+        const normalizedQuery = customerNameQuery.toLowerCase();
+        const allReservations = await reservationModel.listWithDetails();
+        const reservations = normalizedQuery
+            ? allReservations.filter((row) => String(row.customer_name || "").toLowerCase().includes(normalizedQuery))
+            : allReservations;
         renderPage(res, {
             title: "การจอง",
             activePage: "reservations",
             content: "reservations/index",
             reservations,
+            customerNameQuery,
             flashType: req.query.flashType,
             flashMessage: req.query.flashMessage
         });
@@ -49,6 +55,7 @@ async function create(req, res) {
     const customerId = Number(req.body.customer_id);
     const tableId = Number(req.body.table_id);
     const bookingTime = toSqliteDateTime(req.body.booking_time);
+    const partySize = Number(req.body.party_size || 1);
     const status = req.body.status || "Confirmed";
 
     try {
@@ -56,6 +63,7 @@ async function create(req, res) {
             customer_id: customerId,
             table_id: tableId,
             booking_time: bookingTime,
+            party_size: partySize,
             status
         });
         redirectWithFlash(res, "/reservations", "success", "สร้างการจองสำเร็จ");
@@ -94,6 +102,7 @@ async function update(req, res) {
     const customerId = Number(req.body.customer_id);
     const tableId = Number(req.body.table_id);
     const bookingTime = toSqliteDateTime(req.body.booking_time);
+    const partySize = Number(req.body.party_size || 1);
     const status = req.body.status;
 
     try {
@@ -101,6 +110,7 @@ async function update(req, res) {
             customer_id: customerId,
             table_id: tableId,
             booking_time: bookingTime,
+            party_size: partySize,
             status
         });
         redirectWithFlash(res, `/reservations/${id}`, "success", "อัปเดตการจองสำเร็จ");

@@ -1,9 +1,33 @@
 ﻿<section class="card form-card"><h2>แก้ไขการจอง</h2><form class="form" method="post" action="/reservations/<%= reservation.id %>">
 <input type="hidden" name="_method" value="PUT">
 <label>ลูกค้า<select name="customer_id" required><% customers.forEach((c) => { %><option value="<%= c.id %>" <%= Number(reservation.customer_id) === Number(c.id) ? 'selected' : '' %>><%= c.full_name %> (<%= c.phone %>)</option><% }) %></select></label>
-<label>โต๊ะ<select name="table_id" required><% tables.forEach((t) => { %><option value="<%= t.id %>" <%= Number(reservation.table_id) === Number(t.id) ? 'selected' : '' %> <%= t.status === 'Maintenance' && Number(reservation.table_id)!==Number(t.id) ? 'disabled' : '' %>><%= t.table_number %> - <%= t.zone_name %> (<%= t.seat_count %> ที่นั่ง)<%= t.status === 'Maintenance' && Number(reservation.table_id)!==Number(t.id) ? ' [ปิดปรับปรุง]' : '' %></option><% }) %></select></label>
+<label>โต๊ะ<select id="admin-table-select-edit" name="table_id" required><% tables.forEach((t) => { %><option value="<%= t.id %>" data-seats="<%= t.seat_count %>" <%= Number(reservation.table_id) === Number(t.id) ? 'selected' : '' %> <%= t.status === 'Maintenance' && Number(reservation.table_id)!==Number(t.id) ? 'disabled' : '' %>><%= t.table_number %> - <%= t.zone_name %> (<%= t.seat_count %> ที่นั่ง)<%= t.status === 'Maintenance' && Number(reservation.table_id)!==Number(t.id) ? ' [ปิดปรับปรุง]' : '' %></option><% }) %></select></label>
 <label>เวลาเริ่มจอง<input type="datetime-local" name="booking_time" required value="<%= reservation.booking_time_local %>"></label>
+<label>จำนวนลูกค้า<input id="admin-party-size-edit" type="number" name="party_size" min="1" required value="<%= reservation.party_size || 1 %>"></label>
+<p id="admin-seat-hint-edit" class="hint">เลือกจำนวนลูกค้าไม่เกินจำนวนที่นั่งของโต๊ะที่เลือก</p>
 <label>สถานะ<select name="status" required><option value="Confirmed" <%= reservation.status === 'Confirmed' ? 'selected' : '' %>>ยืนยันแล้ว</option><option value="Completed" <%= reservation.status === 'Completed' ? 'selected' : '' %>>เสร็จสิ้น</option><option value="Cancelled" <%= reservation.status === 'Cancelled' ? 'selected' : '' %>>ยกเลิกแล้ว</option></select></label>
 <p class="hint">เวลาสิ้นสุดจะคำนวณอัตโนมัติ (+2 ชั่วโมง)</p>
 <div class="inline"><button class="btn btn-primary" type="submit">อัปเดต</button><a class="btn btn-cancel" href="/reservations/<%= reservation.id %>">ยกเลิก</a></div>
 </form></section>
+<script>
+    (function () {
+        var tableSelect = document.getElementById("admin-table-select-edit");
+        var partyInput = document.getElementById("admin-party-size-edit");
+        var hint = document.getElementById("admin-seat-hint-edit");
+        if (!tableSelect || !partyInput || !hint) return;
+        function syncPartyLimit() {
+            var opt = tableSelect.options[tableSelect.selectedIndex];
+            var seats = opt ? Number(opt.getAttribute("data-seats") || 0) : 0;
+            if (seats > 0) {
+                partyInput.max = String(seats);
+                hint.textContent = "โต๊ะนี้รองรับสูงสุด " + seats + " คน";
+                if (Number(partyInput.value || 0) > seats) partyInput.value = String(seats);
+            } else {
+                partyInput.removeAttribute("max");
+                hint.textContent = "เลือกจำนวนลูกค้าไม่เกินจำนวนที่นั่งของโต๊ะที่เลือก";
+            }
+        }
+        tableSelect.addEventListener("change", syncPartyLimit);
+        syncPartyLimit();
+    })();
+</script>

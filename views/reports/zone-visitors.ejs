@@ -1,10 +1,63 @@
-﻿<section class="card page-head"><h2>รายงาน: ผู้ใช้บริการแยกตามโซน</h2><div class="inline"><a class="btn btn-cancel" href="/reports/daily-table-usage">การใช้งานรายวัน</a><button type="button" class="btn btn-cancel" onclick="window.print()">พิมพ์</button></div></section>
+<section class="card page-head">
+    <h2>รายงาน: ผู้ใช้บริการแยกตามโซน</h2>
+    <div class="inline">
+        <a class="btn btn-cancel" href="/reports/daily-table-usage">การใช้งานรายวัน</a>
+        <button type="button" class="btn btn-cancel" onclick="window.print()">พิมพ์</button>
+    </div>
+</section>
+
 <section class="card">
-<form class="inline-filter" method="get" action="/reports/zone-visitors">
-<label>วันที่<input type="date" name="date" value="<%= date %>"></label>
-<label>โซน<select name="zone_id"><option value="All">ทั้งหมด</option><% zones.forEach((z) => { %><option value="<%= z.id %>" <%= String(zoneId) === String(z.id) ? 'selected' : '' %>><%= z.zone_name %></option><% }) %></select></label>
-<button class="btn btn-primary" type="submit">กรอง</button>
-</form>
-<div class="summary-grid"><div class="summary-item">โซน: <strong><%= summary.zones %></strong></div><div class="summary-item">การจอง: <strong><%= summary.reservations %></strong></div><div class="summary-item">ผู้ใช้บริการโดยประมาณ: <strong><%= summary.visitors %></strong></div></div>
-<div class="table-wrap"><table class="data-table"><thead><tr><th>โซน</th><th>จำนวนการจอง</th><th>ผู้ใช้บริการโดยประมาณ</th><th>ยืนยันแล้ว</th><th>เสร็จสิ้น</th><th>ยกเลิกแล้ว</th></tr></thead><tbody><% if (!rows.length) { %><tr><td colspan="6" class="empty">ไม่พบข้อมูล</td></tr><% } %><% rows.forEach((r) => { %><tr><td><%= r.zone_name %></td><td><%= r.reservation_count %></td><td><%= r.estimated_visitors %></td><td><%= r.confirmed_count %></td><td><%= r.completed_count %></td><td><%= r.cancelled_count %></td></tr><% }) %></tbody></table></div>
+    <form class="inline-filter" method="get" action="/reports/zone-visitors">
+        <label>
+            วันที่
+            <input type="date" name="date" value="<%= date %>">
+        </label>
+        <label>
+            โซน
+            <select name="zone_id">
+                <option value="All">ทั้งหมด</option>
+                <% zones.forEach((z) => { %>
+                    <option value="<%= z.id %>" <%= String(zoneId) === String(z.id) ? "selected" : "" %>>
+                        <%= z.zone_name %>
+                    </option>
+                <% }) %>
+            </select>
+        </label>
+        <button class="btn btn-primary" type="submit">กรอง</button>
+    </form>
+
+    <div class="summary-grid">
+        <div class="summary-item">โซนที่มีการจอง: <strong><%= summary.zones %></strong></div>
+        <div class="summary-item">ช่วงเวลา (2 ชม.): <strong><%= summary.slots %></strong></div>
+        <div class="summary-item">จำนวนการจอง: <strong><%= summary.reservations %></strong></div>
+        <div class="summary-item">ผู้ใช้บริการโดยประมาณ: <strong><%= summary.visitors %></strong></div>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>โซน</th>
+                    <th>ช่วงเวลา (2 ชม.)</th>
+                    <th>จำนวนการจอง</th>
+                    <th>ผู้ใช้บริการโดยประมาณ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (!rows.length) { %>
+                    <tr>
+                        <td colspan="4" class="empty">ไม่พบการจองในวันที่เลือก</td>
+                    </tr>
+                <% } %>
+                <% rows.forEach((r) => { %>
+                    <tr>
+                        <td><%= r.zone_name %></td>
+                        <td><%= r.time_slot %></td>
+                        <td><%= r.reservation_count %></td>
+                        <td><%= r.estimated_visitors %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
 </section>

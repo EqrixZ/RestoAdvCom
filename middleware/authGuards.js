@@ -5,12 +5,12 @@ function withNextUrl(req) {
 
 function requireAdmin(req, res, next) {
     if (req.auth && req.auth.role === "admin") return next();
-    return res.redirect(`/login/admin?${withNextUrl(req)}`);
+    return res.redirect(`/login?${withNextUrl(req)}`);
 }
 
 function requireUser(req, res, next) {
     if (req.auth && req.auth.role === "user") return next();
-    return res.redirect(`/login/user?${withNextUrl(req)}`);
+    return res.redirect(`/login?${withNextUrl(req)}`);
 }
 
 module.exports = {

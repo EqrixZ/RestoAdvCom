@@ -12,11 +12,12 @@ function listWithDetails() {
 }
 
 function create(payload) {
-    return run("INSERT INTO Reservations (customer_id, table_id, booking_time, end_time, status) VALUES (?, ?, ?, ?, ?)", [
+    return run("INSERT INTO Reservations (customer_id, table_id, booking_time, end_time, party_size, status) VALUES (?, ?, ?, ?, ?, ?)", [
         payload.customer_id,
         payload.table_id,
         payload.booking_time,
         payload.end_time,
+        payload.party_size,
         payload.status
     ]);
 }
@@ -42,9 +43,9 @@ function findByIdWithDetails(id) {
 function updateById(id, payload) {
     return run(
         `UPDATE Reservations
-         SET customer_id = ?, table_id = ?, booking_time = ?, end_time = ?, status = ?
+         SET customer_id = ?, table_id = ?, booking_time = ?, end_time = ?, party_size = ?, status = ?
          WHERE id = ?`,
-        [payload.customer_id, payload.table_id, payload.booking_time, payload.end_time, payload.status, id]
+        [payload.customer_id, payload.table_id, payload.booking_time, payload.end_time, payload.party_size, payload.status, id]
     );
 }
 
@@ -124,6 +125,7 @@ function byDate(date, status = "All") {
             c.full_name AS customer_name,
             r.booking_time,
             r.end_time,
+            r.party_size,
             r.status
          FROM Reservations r
          INNER JOIN Customers c ON c.id = r.customer_id

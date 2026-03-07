@@ -356,16 +356,19 @@ router.get("/reservations/:id", async (req, res) => {
 });
 
 router.post("/reservations", async (req, res) => {
-    const { customer_id, table_id, booking_time, status } = req.body || {};
+    const { customer_id, table_id, booking_time, party_size, status } = req.body || {};
     if (!customer_id || !table_id || !booking_time) return fail(res, 400, "กรอก customer_id, table_id, booking_time ให้ครบ");
     const customerId = Number(customer_id);
     const tableId = Number(table_id);
     const bookingTime = toSqliteDateTime(booking_time);
+    const partySize = Number(party_size || 1);
     const statusValue = status || "Confirmed";
     try {
         const table = await tableModel.findById(tableId);
         if (!table) return fail(res, 404, "ไม่พบโต๊ะ");
         if (table.status === "Maintenance") return fail(res, 400, "โต๊ะนี้อยู่ระหว่างปิดปรับปรุง");
+        if (!Number.isInteger(partySize) || partySize <= 0) return fail(res, 400, "จำนวนลูกค้าไม่ถูกต้อง");
+        if (partySize > Number(table.seat_count)) return fail(res, 400, "จำนวนลูกค้าเกินจำนวนที่นั่งของโต๊ะ");
 
         const overlap = await reservationModel.overlapCount(tableId, bookingTime);
         if (overlap.count > 0) return fail(res, 409, "โต๊ะนี้มีการจองแล้วในช่วงเวลาดังกล่าว");
@@ -376,6 +379,7 @@ router.post("/reservations", async (req, res) => {
             table_id: tableId,
             booking_time: bookingTime,
             end_time: endRow.end_time,
+            party_size: partySize,
             status: statusValue
         });
         const created = await reservationModel.findByIdWithDetails(result.lastID);
@@ -388,7 +392,7 @@ router.post("/reservations", async (req, res) => {
 
 router.put("/reservations/:id", async (req, res) => {
     const id = Number(req.params.id);
-    const { customer_id, table_id, booking_time, status } = req.body || {};
+    const { customer_id, table_id, booking_time, party_size, status } = req.body || {};
     if (!customer_id || !table_id || !booking_time || !status) return fail(res, 400, "กรอก customer_id, table_id, booking_time, status ให้ครบ");
     const customerId = Number(customer_id);
     const tableId = Number(table_id);
@@ -396,10 +400,13 @@ router.put("/reservations/:id", async (req, res) => {
     try {
         const exists = await reservationModel.findById(id);
         if (!exists) return fail(res, 404, "ไม่พบการจอง");
+        const partySize = Number(party_size || exists.party_size || 1);
 
         const table = await tableModel.findById(tableId);
         if (!table) return fail(res, 404, "ไม่พบโต๊ะ");
         if (table.status === "Maintenance") return fail(res, 400, "โต๊ะนี้อยู่ระหว่างปิดปรับปรุง");
+        if (!Number.isInteger(partySize) || partySize <= 0) return fail(res, 400, "จำนวนลูกค้าไม่ถูกต้อง");
+        if (partySize > Number(table.seat_count)) return fail(res, 400, "จำนวนลูกค้าเกินจำนวนที่นั่งของโต๊ะ");
 
         const overlap = await reservationModel.overlapCount(tableId, bookingTime, id);
         if (overlap.count > 0) return fail(res, 409, "โต๊ะนี้มีการจองแล้วในช่วงเวลาดังกล่าว");
@@ -410,6 +417,7 @@ router.put("/reservations/:id", async (req, res) => {
             table_id: tableId,
             booking_time: bookingTime,
             end_time: endRow.end_time,
+            party_size: partySize,
             status
         });
         const updated = await reservationModel.findByIdWithDetails(id);
@@ -455,8 +463,10 @@ router.get("/reports/zone-visitors", async (req, res) => {
     const zoneId = req.query.zone_id || "All";
     try {
         const rows = await reportModel.zoneVisitorsByDate(date, zoneId);
+        const zoneCount = new Set(rows.map((row) => Number(row.id))).size;
         const summary = {
-            zones: rows.length,
+            zones: zoneCount,
+            slots: rows.length,
             reservations: rows.reduce((acc, row) => acc + Number(row.reservation_count || 0), 0),
             visitors: rows.reduce((acc, row) => acc + Number(row.estimated_visitors || 0), 0)
         };

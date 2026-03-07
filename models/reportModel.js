@@ -8,20 +8,30 @@ function zoneVisitorsByDate(date, zoneId = "All") {
         params.push(Number(zoneId));
     }
     return all(
-        `SELECT
-            z.id,
-            z.zone_name,
-            COUNT(r.id) AS reservation_count,
-            IFNULL(SUM(t.seat_count), 0) AS estimated_visitors,
-            SUM(CASE WHEN r.status = 'Confirmed' THEN 1 ELSE 0 END) AS confirmed_count,
-            SUM(CASE WHEN r.status = 'Completed' THEN 1 ELSE 0 END) AS completed_count,
-            SUM(CASE WHEN r.status = 'Cancelled' THEN 1 ELSE 0 END) AS cancelled_count
-         FROM Zones z
-         LEFT JOIN DiningTables t ON t.zone_id = z.id
-         LEFT JOIN Reservations r ON r.table_id = t.id AND date(r.booking_time) = date(?)
-         WHERE 1=1 ${zoneClause}
-         GROUP BY z.id
-         ORDER BY z.zone_name`,
+        `WITH bookings AS (
+            SELECT
+                z.id AS zone_id,
+                z.zone_name,
+                r.party_size,
+                substr(r.booking_time, 12, 5) AS slot_sort,
+                (substr(r.booking_time, 12, 5) || ' - ' || substr(r.end_time, 12, 5)) AS time_slot
+            FROM Reservations r
+            INNER JOIN DiningTables t ON t.id = r.table_id
+            INNER JOIN Zones z ON z.id = t.zone_id
+            WHERE date(r.booking_time) = date(?)
+              AND r.status != 'Cancelled'
+              ${zoneClause}
+        )
+        SELECT
+            zone_id AS id,
+            zone_name,
+            time_slot,
+            COUNT(*) AS reservation_count,
+            IFNULL(SUM(party_size), 0) AS estimated_visitors
+        FROM bookings
+        GROUP BY zone_id, zone_name, time_slot, slot_sort
+        HAVING COUNT(*) > 0
+        ORDER BY zone_name, slot_sort`,
         params
     );
 }

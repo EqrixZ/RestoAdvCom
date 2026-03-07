@@ -1,0 +1,18 @@
+<section class="card auth-card auth-card-modern">
+    <p class="auth-eyebrow">RestoBook Access</p>
+    <h2>เข้าสู่ระบบ</h2>
+    <p class="muted auth-subtitle">กรอกอีเมลและรหัสผ่านเพื่อเข้าสู่ระบบ</p>
+
+    <form class="form auth-form" method="post" action="/login">
+        <input type="hidden" name="next" value="<%= next || '' %>">
+        <label>
+            อีเมล
+            <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        </label>
+        <label>
+            รหัสผ่าน
+            <input type="password" name="password" placeholder="สำหรับผู้ใช้ ใช้เบอร์โทรที่สมัครไว้" autocomplete="current-password" required>
+        </label>
+        <button type="submit" class="btn btn-primary auth-submit">Login</button>
+    </form>
+</section>

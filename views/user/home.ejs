@@ -1,47 +1,69 @@
 <section class="card page-head">
-    <h2>โต๊ะที่ว่างและช่วงเวลา</h2>
-    <form class="inline" method="get" action="/user/home">
+    <div>
+        <h2>ค้นหาโต๊ะว่าง</h2>
+        <p class="muted">ระบุวันที่ เวลา และจำนวนคน เพื่อดูโต๊ะที่ว่างทันที</p>
+    </div>
+    <form class="inline availability-filter" method="get" action="/user/home">
         <label>
             วันที่
             <input type="date" name="date" value="<%= date %>" required>
         </label>
+        <label>
+            เวลาเริ่ม
+            <input type="time" name="time" value="<%= time %>" min="10:00" max="20:00" required>
+        </label>
+        <label>
+            จำนวนคน
+            <input type="number" name="party_size" value="<%= partySize %>" min="1" max="<%= maxPartySize %>" required>
+        </label>
         <button class="btn btn-primary" type="submit">แสดงผล</button>
+        <% if (hasSearched) { %>
+            <a class="btn btn-add" href="/user/reservations/new?date=<%= encodeURIComponent(date) %>&time=<%= encodeURIComponent(time) %>&party_size=<%= partySize %>">จองโต๊ะตอนนี้</a>
+        <% } else { %>
+            <button class="btn btn-add btn-disabled" type="button" disabled>จองโต๊ะตอนนี้</button>
+        <% } %>
     </form>
 </section>
 
 <section class="card">
     <div class="availability-summary">
-        <span class="availability-summary__label">จำนวนโต๊ะที่พร้อมจอง</span>
+        <span class="availability-summary__label">โต๊ะที่รองรับอย่างน้อย <%= partySize %> คน</span>
         <strong class="availability-summary__value"><%= tableCount %> โต๊ะ</strong>
     </div>
-    <div class="table-wrap">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>ช่วงเวลา</th>
-                    <th>จำนวนโต๊ะว่าง</th>
-                    <th>โต๊ะที่ว่าง</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% availabilityBySlot.forEach((slot) => { %>
-                    <tr>
-                        <td><%= slot.label %></td>
-                        <td><strong><%= slot.availableTables.length %></strong> โต๊ะ</td>
-                        <td>
-                            <% if (!slot.availableTables.length) { %>
-                                <span class="empty">ไม่มีโต๊ะว่าง</span>
-                            <% } else { %>
-                                <div class="pill-list">
-                                    <% slot.availableTables.forEach((table) => { %>
-                                        <span class="pill">โต๊ะ <%= table.table_number %> - <%= table.zone_name %> - <%= table.seat_count %> ที่นั่ง</span>
-                                    <% }) %>
-                                </div>
-                            <% } %>
-                        </td>
-                    </tr>
+    <div class="availability-summary">
+        <span class="availability-summary__label">ช่วงเวลาที่เลือก</span>
+        <strong class="availability-summary__value"><%= selectedWindow %></strong>
+    </div>
+
+    <% if (!availableTables.length) { %>
+        <p class="empty">ไม่พบโต๊ะว่างในช่วงเวลานี้สำหรับ <%= partySize %> คน</p>
+    <% } %>
+
+    <% if (availableTables.length) { %>
+        <div class="slot-card">
+            <div class="slot-card__head">
+                <h3>โต๊ะว่างที่แนะนำ</h3>
+                <span class="badge ok"><%= availableTables.length %> โต๊ะ</span>
+            </div>
+            <div class="table-chip-list">
+                <% availableTables.forEach((table) => { %>
+                    <div class="table-chip">
+                        <strong>โต๊ะ <%= table.table_number %></strong>
+                        <span><%= table.seat_count %> ที่นั่ง</span>
+                        <span class="muted"><%= table.zone_name %></span>
+                        <a
+                            class="btn btn-primary"
+                            href="/user/reservations/new?table_id=<%= table.id %>&date=<%= encodeURIComponent(date) %>&time=<%= encodeURIComponent(time) %>&party_size=<%= partySize %>"
+                        >
+                            จองโต๊ะนี้
+                        </a>
+                    </div>
                 <% }) %>
-            </tbody>
-        </table>
+            </div>
+        </div>
+    <% } %>
+
+    <div class="hint">
+        เวลาเปิดให้จองคือ 10:00-22:00 และแต่ละการจองมีระยะเวลา 2 ชั่วโมง
     </div>
 </section>

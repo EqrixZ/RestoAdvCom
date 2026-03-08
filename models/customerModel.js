@@ -38,7 +38,7 @@ function reservationsByCustomer(customerId) {
          INNER JOIN DiningTables t ON t.id = r.table_id
          INNER JOIN Zones z ON z.id = t.zone_id
          WHERE r.customer_id = ?
-         ORDER BY datetime(r.booking_time) DESC`,
+         ORDER BY r.booking_time DESC`,
         [customerId]
     );
 }

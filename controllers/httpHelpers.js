@@ -19,9 +19,11 @@ function handleError(res, error) {
 
 function parseSqlError(error, fallback) {
     if (!error) return fallback;
-    if (error.message.includes("UNIQUE constraint failed")) return "พบข้อมูลซ้ำ กรุณาใช้ค่าที่ไม่ซ้ำ";
-    if (error.message.includes("FOREIGN KEY constraint failed")) return "ไม่สามารถลบรายการนี้ได้ เพราะมีข้อมูลอื่นเชื่อมโยงอยู่";
-    if (error.message.includes("CHECK constraint failed")) return "ค่าไม่ถูกต้อง กรุณาตรวจสอบข้อมูลที่กรอก";
+    const code = error.code || "";
+    const msg = error.message || "";
+    if (code === "ER_DUP_ENTRY" || msg.includes("UNIQUE constraint failed")) return "พบข้อมูลซ้ำ กรุณาใช้ค่าที่ไม่ซ้ำ";
+    if (code === "ER_ROW_IS_REFERENCED_2" || code === "ER_NO_REFERENCED_ROW_2" || msg.includes("FOREIGN KEY constraint failed")) return "ไม่สามารถลบรายการนี้ได้ เพราะมีข้อมูลอื่นเชื่อมโยงอยู่";
+    if (code === "ER_CHECK_CONSTRAINT_VIOLATED" || msg.includes("CHECK constraint failed")) return "ค่าไม่ถูกต้อง กรุณาตรวจสอบข้อมูลที่กรอก";
     return fallback;
 }
 

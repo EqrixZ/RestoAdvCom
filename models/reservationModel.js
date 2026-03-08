@@ -7,7 +7,7 @@ function listWithDetails() {
          INNER JOIN Customers c ON c.id = r.customer_id
          INNER JOIN DiningTables t ON t.id = r.table_id
          INNER JOIN Zones z ON z.id = t.zone_id
-         ORDER BY datetime(r.booking_time) DESC`
+         ORDER BY r.booking_time DESC`
     );
 }
 
@@ -69,7 +69,7 @@ function overlapCount(tableId, bookingTime, excludedReservationId = null) {
              WHERE table_id = ?
                AND id != ?
                AND status != 'Cancelled'
-               AND booking_time < datetime(?, '+2 hours')
+               AND booking_time < DATE_ADD(?, INTERVAL 2 HOUR)
                AND end_time > ?`,
             [tableId, excludedReservationId, bookingTime, bookingTime]
         );
@@ -79,7 +79,7 @@ function overlapCount(tableId, bookingTime, excludedReservationId = null) {
          FROM Reservations
          WHERE table_id = ?
            AND status != 'Cancelled'
-           AND booking_time < datetime(?, '+2 hours')
+           AND booking_time < DATE_ADD(?, INTERVAL 2 HOUR)
            AND end_time > ?`,
         [tableId, bookingTime, bookingTime]
     );
@@ -107,7 +107,7 @@ function customerAndTableDetail(customerId, tableId) {
 }
 
 function calculateEndTime(bookingTime) {
-    return get("SELECT datetime(?, '+2 hours') AS end_time", [bookingTime]);
+    return get("SELECT DATE_ADD(?, INTERVAL 2 HOUR) AS end_time", [bookingTime]);
 }
 
 function byDate(date, status = "All") {
@@ -131,9 +131,9 @@ function byDate(date, status = "All") {
          INNER JOIN Customers c ON c.id = r.customer_id
          INNER JOIN DiningTables t ON t.id = r.table_id
          INNER JOIN Zones z ON z.id = t.zone_id
-         WHERE date(r.booking_time) = date(?)
+         WHERE DATE(r.booking_time) = DATE(?)
          ${statusClause}
-         ORDER BY datetime(r.booking_time)`,
+         ORDER BY r.booking_time`,
         params
     );
 }

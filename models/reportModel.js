@@ -13,12 +13,12 @@ function zoneVisitorsByDate(date, zoneId = "All") {
                 z.id AS zone_id,
                 z.zone_name,
                 r.party_size,
-                substr(r.booking_time, 12, 5) AS slot_sort,
-                (substr(r.booking_time, 12, 5) || ' - ' || substr(r.end_time, 12, 5)) AS time_slot
+                TIME_FORMAT(r.booking_time, '%H:%i') AS slot_sort,
+                CONCAT(TIME_FORMAT(r.booking_time, '%H:%i'), ' - ', TIME_FORMAT(r.end_time, '%H:%i')) AS time_slot
             FROM Reservations r
             INNER JOIN DiningTables t ON t.id = r.table_id
             INNER JOIN Zones z ON z.id = t.zone_id
-            WHERE date(r.booking_time) = date(?)
+            WHERE DATE(r.booking_time) = DATE(?)
               AND r.status != 'Cancelled'
               ${zoneClause}
         )
